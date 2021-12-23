@@ -52,7 +52,7 @@ jobs:
         run: kubectl apply -f $GITHUB_WORKSPACE/config/deployment.yml
 
       - name: Verify job completeion
-        run: kubectl wait --for=condition=Completed --timeout=120s job/apispec-job
+        run: kubectl wait --for=condition=complete --timeout=120s job/apispec-job
 
       - name: Cleanup job
         run: kubectl delete job/apispec-job

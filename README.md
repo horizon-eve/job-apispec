@@ -1,4 +1,6 @@
 # Job-apispec
+[![doks-staging](https://github.com/horizon-eve/job-apispec/actions/workflows/doks-staging.yml/badge.svg?branch=main)](https://github.com/horizon-eve/job-apispec/actions/workflows/doks-staging.yml)
+
 API Spec refresh job based on restormjs: https://www.npmjs.com/package/restormjs
 
 Generates restormjs api spec from postgres database objects. 
