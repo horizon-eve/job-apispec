@@ -6,6 +6,7 @@ name: doks-staging
 on:
   push:
     branches:
+      - main
       - master
     paths:
       - 'config/**'
