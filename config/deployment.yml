@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "apispec-job"
+  labels:
+  annotations:
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      name: "apispec-job-pod"
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: apispec-job
+          image: <IMAGE>
+          env:
+            - name: PGHOST
+              value: postgres-service
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres-user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres-password
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres-db
+            - name: ESI_CACHE_SCHEMA
+              valueFrom:
+                secretKeyRef:
+                  name: horizon-esi-secrets
+                  key: cache-schema
+          volumeMounts:
+            - mountPath: /var/apispec/data
+              name: apispec-volume
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 100m
+      volumes:
+        - name: apispec-volume
+          persistentVolumeClaim:
+            claimName: apispec-pv-claim

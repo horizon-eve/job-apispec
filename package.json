@@ -1,0 +1,23 @@
+{
+  "name": "job-apispec",
+  "version": "1.0.0",
+  "description": "Horizon API Spec generator job",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/horizon-eve/job-apispec.git"
+  },
+  "author": "Oleksandr Minaiev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/horizon-eve/job-apispec/issues"
+  },
+  "homepage": "https://github.com/horizon-eve/job-apispec#readme",
+  "dependencies": {
+    "pg": "^8.7.1",
+    "restormjs": "0.0.13"
+  }
+}
