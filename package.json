@@ -18,6 +18,6 @@
   "homepage": "https://github.com/horizon-eve/job-apispec#readme",
   "dependencies": {
     "pg": "^8.7.1",
-    "restormjs": "0.0.13"
+    "restormjs": "0.0.16"
   }
 }

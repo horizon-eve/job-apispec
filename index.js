@@ -9,6 +9,7 @@ const port = process.argv[5]
 const database = process.argv[6]
 const user = process.argv[7]
 const password = process.argv[8]
+const force_refresh = process.argv[9]
 
 const handler = {
   api: {
@@ -16,7 +17,6 @@ const handler = {
       client.query("SELECT name FROM public.migrations WHERE name like '%api/%' order by run_on desc limit 1", (err, res) => {
         if (err || res.rows.length !== 1) {
           console.error(`error fetching migrations`)
-          process.exit(1)
         }
         const version = res.rows[0].name.replace(/api\//gi, '')
         const schema = 'api'
@@ -32,12 +32,10 @@ const handler = {
       const schema = process.env.ESI_CACHE_SCHEMA
       if (!schema) {
         log.error ('esi schema required as env variable ESI_CACHE_SCHEMA')
-        process.exit(-1)
       }
       client.query(`SELECT version, description FROM ${schema}.swagger_mapping`, (err, res) => {
         if (err || res.rows.length !== 1) {
           console.error(`error fetching swagger_mapping`)
-          process.exit(1)
         }
         const version = res.rows[0].version
         const name = `Racopub ESI API aligned with EVE v${version}`
@@ -54,13 +52,13 @@ const handler = {
       client.query(`SELECT md5 FROM public.evesde_upgrade_history order by upgraded limit 1`, (err, res) => {
         if (err || res.rows.length !== 1) {
           console.error(`error fetching migrations: ${err}`)
-          process.exit(1)
         }
         const version = res.rows[0].md5.replace(/\s.*$/gi, '')
         const name = `Racopub EVESDE API aligned with EVE v${version}`
         const desc = `Racopub EVESDE API based on ${res.rows[0].md5}`
         const filename = `spec-sde-${version}.json`;
         ready(version, schema, name, desc, filename)
+        client.end()
       })
     }
   }
@@ -97,12 +95,11 @@ console.log(`running api spec refresh for: ${kind}`)
 
 handler[kind].get(client, function (version, schema, name, desc, filename) {
   const file = `${path}/${filename}`
-  if (fs.existsSync(file)) {
+  if (!force_refresh && fs.existsSync(file)) {
     console.log(`${kind} already has latest spec version ${version}, skipping refresh.`)
-    process.exit(0)
   } else {
     const args = `--db-user=${user} --db-passwd=${password} --db-host=${host} --db-port=${port} --db-name=${database} --db-schema=${schema} --pub-role=api --auth-role=authenticated --output=${file} --api-name="${name}" --api-desc="${desc}" --api-version=${version}`
-    const command = `node node_modules/restormjs/bin/pg2api.js ${args}`
+    const command = `node node_modules/restormjs/bin/restormjs-pg-spec.js ${args}`
     cmd(command)
   }
 })
